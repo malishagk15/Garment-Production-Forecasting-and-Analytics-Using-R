@@ -1,0 +1,2 @@
+"0","# Drop rows with NA values in ""S/O"" and ""L/I"" columns"
+"0","combined_data <- combined_data[complete.cases(combined_data[, c(""S/O"", ""L/I"")]), ]"

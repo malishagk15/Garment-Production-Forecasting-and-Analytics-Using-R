@@ -1,0 +1,110 @@
+
+```{r}
+# read the CSV file
+top_features <- read.csv("G:/R_project/CodeBase/RAssignment/top.csv")
+```
+
+```{r}
+# Convert columns to factors
+factor_columns <- c("Actual.Date", "Style.Code", "Actual.Module", "PE", "Description", "SO", "Customer.Dept", "Material", "FG.Reference", "Customer.No", "Actual.Section")
+top_features[factor_columns] <- lapply(top_features[factor_columns], factor)
+
+# Convert columns to numerical
+numeric_columns <- c("SO.LI.Worked.Hours", "Actual.SMV", "Actual.Standard.Hours", "Total", "Actual.Worked.Hours", "Plan.Efficiency", "Order.Qty", "Plan.SMV", "Actual.Efficiency")
+top_features[numeric_columns] <- lapply(top_features[numeric_columns], as.numeric)
+```
+
+```{r}
+str(top_features)
+```
+
+```{r}
+hist(top_features$SO.LI.Worked.Hours)
+```
+```{r}
+hist(top_features$Actual.SMV)
+```
+```{r}
+hist(top_features$Actual.Standard.Hours)
+```
+```{r}
+hist(top_features$Total)
+```
+```{r}
+hist(top_features$Actual.Worked.Hours)
+```
+```{r}
+hist(top_features$Plan.Efficiency)
+```
+```{r}
+hist(top_features$Order.Qty)
+```
+```{r}
+hist(top_features$Plan.SMV)
+```
+```{r}
+hist(top_features$Actual.Efficiency)
+```
+```{r}
+library(ggplot2)
+
+plot_top_ten <- function(dataset, column) {
+  # Calculate the frequency of each category
+  freq_table <- table(dataset[[column]])
+  
+  # Sort the frequencies in descending order
+  sorted_freq <- sort(freq_table, decreasing = TRUE)
+  
+  # Select the top ten values with highest frequencies
+  top_ten_values <- names(sorted_freq)[1:10]
+  
+  # Subset the data to include only the top ten values
+  data_subset <- subset(dataset, dataset[[column]] %in% top_ten_values)
+  
+  # Create a bar plot with angled labels on the X-axis
+  ggplot(data_subset, aes(x = .data[[column]])) +
+  geom_bar() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+}
+```
+
+```{r}
+plot_top_ten(top_features, "Style.Code")
+```
+
+```{r}
+plot_top_ten(top_features, "Actual.Module")
+```
+
+```{r}
+plot_top_ten(top_features, "PE")
+```
+
+```{r}
+plot_top_ten(top_features, "Description")
+```
+
+```{r}
+plot_top_ten(top_features, "SO")
+```
+
+```{r}
+plot_top_ten(top_features, "Customer.Dept")
+```
+
+```{r}
+plot_top_ten(top_features, "Material")
+```
+
+```{r}
+plot_top_ten(top_features, "FG.Reference")
+```
+
+```{r}
+plot_top_ten(top_features, "Actual.Section")
+```
+
+```{r}
+plot_top_ten(top_features, "Customer.No")
+```

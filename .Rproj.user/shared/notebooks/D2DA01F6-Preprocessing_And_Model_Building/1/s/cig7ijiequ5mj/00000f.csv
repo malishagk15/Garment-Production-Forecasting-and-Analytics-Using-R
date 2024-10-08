@@ -1,0 +1,6 @@
+"0","rmse"
+"1","[1]"
+"1"," 14.34659"
+"1","
+"
+"0","#The root mean square error (RMSE) value of 14.34659 indicates the average difference between the predicted values and the actual values of the ""Actual.Efficiency"" variable in the test dataset. Since the RMSE is a measure of the model's prediction error, a lower RMSE value indicates better performance."

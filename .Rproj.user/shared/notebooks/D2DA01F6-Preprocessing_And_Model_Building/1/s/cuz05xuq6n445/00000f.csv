@@ -1,0 +1,2 @@
+"0","# remove rows with NULLs in SO and LI columns"
+"0","joined_data <- joined_data[complete.cases(joined_data[, c(""Actual.Efficiency"")]), ]"

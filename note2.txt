@@ -1,0 +1,35 @@
+"Date","Section","PE","Work Center","Module","Worked Hours","Customer","Style Code","SO","LI","FG Reference","SO/LI Worked Hours","Efficiency","Total","SMV","Standard Hours"
+
+"Date","Section","PE","Work Center","Actual Module","Actual Worked Hours","Customer","Style Code","SO","LI","FG Reference","SO/LI Worked Hours","Actual Efficiency","Total","Actual SMV","Actual Standard Hours"
+
+"Module","Material","Customer No","Description","Customer Dept.","Gender","S/O","L/I","Order No.","Order Qty.","Emp.","SMV","Date","Eff. %","Qty.","Cum Qty.","Standard Hours."     "Cum.Standard Hours.","Work Hours.","Cum.Work Hours.","Section" 
+
+"Plan Module","Material","Customer No","Description","Customer Dept","Gender","S/O","L/I","Order No","Order Qty","Emp","Plan SMV","Date","Plan Efficiency","Qty","Cum Qty","Standard Hours"     "Cum.Standard Hours","Work Hours","Cum.Work Hours","Section" 
+
+
+# read the CSV file
+combined_data <- read.csv("G:/R_project/CodeBase/RAssignment/combined_data.csv")
+
+# change the column names
+colnames(combined_data) <- c("Plan Module","Material","Customer No","Description","Customer Dept","Gender","S/O","L/I","Order No","Order Qty","Emp","Plan SMV","Date","Plan Efficiency","Qty","Cum Qty","Standard Hours","Cum.Standard Hours","Work Hours","Cum.Work Hours","Section")
+
+
+"Plan.Module","Material","Customer.No","Description","Customer.Dept","Gender","SO","LI","Order.No","Order.Qty","Emp","Plan.SMV","Date.x","Plan.Efficiency","Qty","Cum.Qty","Standard.Hours",
+
+"Cum.Standard.Hours","Work.Hours","Cum.Work.Hours","Section.x","Date.y","Section.y","PE","Work.Center","Actual.Module","Actual.Worked.Hours","Customer","Style.Code","FG.Reference",
+
+"SO.LI.Worked.Hours","Actual.Efficiency","Total","Actual.SMV","Actual.Standard.Hours"
+
+
+
+
+"Plan.Module","Material","Customer.No","Description","Customer.Dept","Gender","SO","LI","Order.No","Order.Qty","Emp","Plan.SMV","Plan.Date","Plan.Efficiency","Qty","Cum.Qty","Standard.Hours",
+"Cum.Standard.Hours","Work.Hours","Cum.Work.Hours","Plan.Section","Actual.Date","Actual.Section","PE","Work.Center","Actual.Module","Actual.Worked.Hours","Customer","Style.Code","FG.Reference",
+
+"SO.LI.Worked.Hours","Actual.Efficiency","Total","Actual.SMV","Actual.Standard.Hours"     
+
+
+       
+
+
+          

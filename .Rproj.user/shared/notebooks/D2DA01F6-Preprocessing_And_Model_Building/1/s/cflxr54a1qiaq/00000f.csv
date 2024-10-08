@@ -1,0 +1,2 @@
+"0","# read the CSV file"
+"0","join <- read.csv(""G:/R_project/CodeBase/RAssignment/join.csv"")"

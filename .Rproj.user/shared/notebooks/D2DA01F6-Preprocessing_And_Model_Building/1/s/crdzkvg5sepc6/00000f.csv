@@ -1,0 +1,5 @@
+"0","# read the CSV file"
+"0","plan <- read.csv(""G:/R_project/CodeBase/RAssignment/plan.csv"")"
+"0",""
+"0","# read the CSV file"
+"0","actual <- read.csv(""G:/R_project/CodeBase/RAssignment/actual.csv"")"

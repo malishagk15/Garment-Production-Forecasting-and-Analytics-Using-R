@@ -1,0 +1,813 @@
+
+```{r}
+#install.packages("readxl")
+#install.packages("dplyr")
+#install.packages("tidyr")
+#install.packages("randomForest")
+#install.packages("caret")
+#install.packages("keras")
+#install.packages("reticulate")
+#install.packages("cluster")
+#install.packages("klaR")
+#install.packages("proxy")
+#install.packages("quanteda")
+#install.packages("mltools")
+#install.packages("fastDummies")
+#install.packages("CatEncoders")
+#install.packages("e1071")
+#install.packages("randomForest")
+#install.packages("caretEnsemble")
+```
+
+```{r}
+# we first create a new variable called section that calculates which section number the current file belongs to based on its position in the file_list. We then add this Section column to the file_data data frame using file_data$Section <- section.
+# 
+# Inside the for loop, we use cat() to print the name of the dataset being combined (file_list[i]) and its corresponding section number (section).
+# 
+# Finally, we print the combined_data data frame using print(combined_data).
+
+# Load the readxl package
+library(readxl)
+
+# Set the directory path
+dir_path <- "G:/R_project/CIS7031/DataSet/Plan"
+
+# Get a list of all files in the directory
+file_list <- list.files(dir_path)
+
+# Create an empty data frame to store the combined data
+combined_data <- data.frame()
+
+# Loop through each file in the list
+for (i in seq_along(file_list)) {
+  
+  # Check if the file name starts with ~$
+  if (!startsWith(file_list[i], "~$")) {
+  
+    # Read the file into a data frame
+    file_data <- read_excel(paste0(dir_path, "/", file_list[i]))
+    
+    section <- ceiling(i / 12)
+  
+    # Add a new column called "Section" with a value based on the file number
+    section <- ifelse(i <= 12, 1, ifelse(i <= 24, 2, ifelse(i <= 36, 3, 4)))
+    file_data$Section <- section
+  
+    # Print the name of the dataset being combined
+    cat("Combining", file_list[i], "into section", section, "\n")
+  
+    # Combine the data with the existing data frame
+    combined_data <- rbind(combined_data, file_data)
+    
+  } else {
+    
+    # Print a message indicating that the file was skipped
+    cat("Skipping temporary file:", file_list[i], "\n")
+    
+  }
+}
+
+# Print the combined data
+print(combined_data)
+
+#dataset called LC Sec 1 - 06.18 - 06.29 is removed since missing columns: Eff. %	Qty.	Cum Qty.	Standard Hours.	Cum.Standard Hours.	Work Hours.	Cum.Work Hours.
+```
+
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/combined_data.csv"
+
+# Write the data frame to a CSV file
+write.csv(combined_data, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The combined data has been saved as", file_path, "\n")
+```
+
+```{r}
+# Print information about the structure of the combined_data data frame
+str(combined_data)
+```
+
+```{r}
+# Print the unique values of each column in the combined_data data frame
+cat("Unique values of each column:\n")
+for (col_name in colnames(combined_data)) {
+  cat(col_name, ":", length(unique(combined_data[[col_name]])), "unique values\n")
+}
+```
+
+```{r}
+# Count the number of NA values in each column of the combined_data data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(combined_data))
+for (i in seq_along(na_count)) {
+  cat(colnames(combined_data)[i], ":", na_count[i], "NA values\n")
+}
+```
+
+```{r}
+# Drop rows with NA values in "S/O" and "L/I" columns
+combined_data <- combined_data[complete.cases(combined_data[, c("S/O", "L/I")]), ]
+```
+
+
+```{r}
+# Count the number of NA values in each column of the combined_data data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(combined_data))
+for (i in seq_along(na_count)) {
+  cat(colnames(combined_data)[i], ":", na_count[i], "NA values\n")
+}
+```
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/combined_data.csv"
+
+# Write the data frame to a CSV file
+write.csv(combined_data, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The combined data has been saved as", file_path, "\n")
+```
+
+```{r}
+#Actual Production Details
+# PR 01.24.2018 - D051 Dataset was removed
+
+# set the directory path where the Excel files are located
+dir_path <- "G:/R_project/CIS7031/DataSet/Production Quantities"
+
+# get the list of all Excel files in the directory
+file_list <- list.files(dir_path, pattern = "\\.xlsx$", full.names = TRUE)
+
+# create an empty list to store the data frames
+df_list <- list()
+
+# loop through each Excel file and read the required columns
+for (i in seq_along(file_list)) {
+  
+  # read the Excel file
+  temp_df <- readxl::read_excel(file_list[i], sheet = 1)
+  
+  # Print the name of the dataset being combined
+  cat("Combining", file_list[i])
+  
+  # subset the required columns
+  temp_df <- temp_df[, c("Date","Section","PE","Work Center","Module","Worked Hours","Customer","Style Code","SO","LI","FG Reference","SO/LI Worked Hours","Efficiency","Total","SMV","Standard Hours")]
+  
+  # coerce the SO and LI columns to character type
+  temp_df$SO <- as.character(temp_df$SO)
+  temp_df$LI <- as.character(temp_df$LI)
+  
+  # add a new column for the file name
+  temp_df$File <- basename(file_list[i])
+  
+  # add the data frame to the list
+  df_list[[i]] <- temp_df
+}
+
+# combine all the data frames into a single data frame
+combined_data_ac <- dplyr::bind_rows(df_list)
+```
+
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/combined_data_ac.csv"
+
+# Write the data frame to a CSV file
+write.csv(combined_data_ac, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The combined data actual has been saved as", file_path, "\n")
+```
+
+```{r}
+# Print information about the structure of the combined_data data frame
+str(combined_data_ac)
+```
+
+```{r}
+# Print the unique values of each column in the combined_data data frame
+cat("Unique values of each column:\n")
+for (col_name in colnames(combined_data_ac)) {
+  cat(col_name, ":", length(unique(combined_data_ac[[col_name]])), "unique values\n")
+}
+```
+
+```{r}
+unique_sections <- unique(combined_data_ac$Section)
+print(unique_sections)
+```
+```{r}
+# get the frequency count of each unique value in the "Section" column
+section_freq <- table(combined_data_ac$Section)
+
+# print the frequency count
+print(section_freq)
+```
+```{r}
+library(dplyr)
+
+# remove the entries with specified values in the Section column
+combined_data_ac_filtered <- combined_data_ac %>%
+  filter(!Section %in% c("Hybrid","PDC SECTION","SECTION X","SEWING","UNION APPAREL"))
+
+# print the unique values of the Section column
+unique_sections <- unique(combined_data_ac_filtered$Section)
+print(unique_sections)
+
+# print the frequency of each unique value in the Section column
+freq_table <- table(combined_data_ac_filtered$Section)
+print(freq_table)
+```
+```{r}
+library(dplyr)
+
+# create a lookup table to map old values to new values
+section_map <- c("SECTION 1" = "1", "SECTION 2" = "2", "SECTION 3" = "3", "SECTION 4" = "4")
+
+# update the values in the Section column
+combined_data_ac_filtered <- combined_data_ac_filtered %>%
+  mutate(Section = section_map[Section])
+```
+
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/combined_data_ac_filtered.csv"
+
+# Write the data frame to a CSV file
+write.csv(combined_data_ac_filtered, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The combined data actual filtered has been saved as", file_path, "\n")
+```
+
+
+```{r}
+col_list <- names(combined_data_ac_filtered)
+print(col_list)
+```
+
+```{r}
+col_list <- names(combined_data)
+print(col_list)
+```
+
+```{r}
+# read the CSV file
+combined_data_ac_filtered <- read.csv("G:/R_project/CodeBase/RAssignment/combined_data_ac_filtered.csv")
+
+# change the column names
+colnames(combined_data_ac_filtered) <- c("Date", "Section", "PE", "Work Center", "Actual Module", "Actual Worked Hours", "Customer", "Style Code", "SO", "LI", "FG Reference", "SO/LI Worked Hours", "Actual Efficiency", "Total", "Actual SMV", "Actual Standard Hours")
+
+```
+
+```{r}
+# read the CSV file
+combined_data <- read.csv("G:/R_project/CodeBase/RAssignment/combined_data.csv")
+
+# change the column names
+colnames(combined_data) <- c("Plan Module","Material","Customer No","Description","Customer Dept","Gender","SO","LI","Order No","Order Qty","Emp","Plan SMV","Date","Plan Efficiency","Qty","Cum Qty","Standard Hours","Cum.Standard Hours","Work Hours","Cum.Work Hours","Section")
+```
+
+```{r}
+# Count the number of NA values in each column of the combined_data_ac_filtered data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(combined_data_ac_filtered))
+for (i in seq_along(na_count)) {
+  cat(colnames(combined_data_ac_filtered)[i], ":", na_count[i], "NA values\n")
+}
+```
+
+```{r}
+# remove rows with NULLs in SO and LI columns
+combined_data_ac_filtered <- combined_data_ac_filtered[complete.cases(combined_data_ac_filtered[, c("SO", "LI")]), ]
+```
+
+```{r}
+# Count the number of NA values in each column of the combined_data data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(combined_data_ac_filtered))
+for (i in seq_along(na_count)) {
+  cat(colnames(combined_data_ac_filtered)[i], ":", na_count[i], "NA values\n")
+}
+```
+
+```{r}
+library(tidyr)
+
+# Replace NULL values with the most common value in Style Code column
+most_common_style_code <- names(sort(table(combined_data_ac_filtered$`Style Code`), decreasing = TRUE))[1]
+combined_data_ac_filtered$`Style Code`[is.na(combined_data_ac_filtered$`Style Code`)] <- most_common_style_code
+
+# Replace NULL values with the most common value in FG Reference column
+most_common_fg_reference <- names(sort(table(combined_data_ac_filtered$`FG Reference`), decreasing = TRUE))[1]
+combined_data_ac_filtered$`FG Reference`[is.na(combined_data_ac_filtered$`FG Reference`)] <- most_common_fg_reference
+
+# Replace NULL values with the most common value in Actual Efficiency column
+most_common_actual_efficiency <- names(sort(table(combined_data_ac_filtered$`Actual Efficiency`), decreasing = TRUE))[1]
+combined_data_ac_filtered$`Actual Efficiency`[is.na(combined_data_ac_filtered$`Actual Efficiency`)] <- most_common_actual_efficiency
+```
+
+```{r}
+# Count the number of NA values in each column of the combined_data data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(combined_data_ac_filtered))
+for (i in seq_along(na_count)) {
+  cat(colnames(combined_data_ac_filtered)[i], ":", na_count[i], "NA values\n")
+}
+```
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/actual.csv"
+
+# Write the data frame to a CSV file
+write.csv(combined_data_ac_filtered, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The actual dataset has been saved as", file_path, "\n")
+```
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/plan.csv"
+
+# Write the data frame to a CSV file
+write.csv(combined_data, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The plan has been saved as", file_path, "\n")
+```
+```{r}
+# read the CSV file
+plan <- read.csv("G:/R_project/CodeBase/RAssignment/plan.csv")
+
+# read the CSV file
+actual <- read.csv("G:/R_project/CodeBase/RAssignment/actual.csv")
+```
+
+```{r}
+# Check if there are any duplicate rows
+any(duplicated(actual))
+```
+```{r}
+# Check if there are any duplicate rows
+any(duplicated(plan))
+```
+```{r}
+# Identify the primary key
+duplicated_rows <- duplicated(actual, fromLast = TRUE)
+if (any(duplicated_rows)) {
+  duplicate_indices <- which(duplicated_rows)
+  primary_key_columns <- c("SO", "LI") # Replace with actual primary key columns
+  differing_columns <- lapply(duplicate_indices, function(i) {
+    which(actual[i,] != actual[i+1,])
+  })
+  primary_key <- unique(primary_key_columns[c(unlist(differing_columns))])
+  print(paste("Primary key columns:", paste(primary_key, collapse = ", ")))
+} else {
+  print("No duplicates found")
+}
+```
+```{r}
+# Identify the primary key
+duplicated_rows <- duplicated(plan, fromLast = TRUE)
+if (any(duplicated_rows)) {
+  duplicate_indices <- which(duplicated_rows)
+  primary_key_columns <- c("SO", "LI") # Replace with actual primary key columns
+  differing_columns <- lapply(duplicate_indices, function(i) {
+    which(plan[i,] != plan[i+1,])
+  })
+  primary_key <- unique(primary_key_columns[c(unlist(differing_columns))])
+  print(paste("Primary key columns:", paste(primary_key, collapse = ", ")))
+} else {
+  print("No duplicates found")
+}
+```
+
+
+```{r}
+library(dplyr)
+
+# join the two data frames
+joined_data <- left_join(plan, actual, by = c("SO","LI"))
+
+```
+```{r}
+str(joined_data)
+```
+
+```{r}
+# Count the number of NA values in each column of the combined_data data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(joined_data))
+for (i in seq_along(na_count)) {
+  cat(colnames(joined_data)[i], ":", na_count[i], "NA values\n")
+}
+```
+```{r}
+# remove rows with NULLs in SO and LI columns
+joined_data <- joined_data[complete.cases(joined_data[, c("Actual.Efficiency")]), ]
+```
+
+```{r}
+# Count the number of NA values in each column of the joined_data data frame
+cat("Number of NA values in each column:\n")
+na_count <- colSums(is.na(joined_data))
+for (i in seq_along(na_count)) {
+  cat(colnames(joined_data)[i], ":", na_count[i], "NA values\n")
+}
+```
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/join.csv"
+
+# Write the data frame to a CSV file
+write.csv(joined_data, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The joined data has been saved as", file_path, "\n")
+```
+```{r}
+# read the CSV file
+join <- read.csv("G:/R_project/CodeBase/RAssignment/join.csv")
+```
+
+```{r}
+col_list <- names(join)
+print(col_list)
+```
+```{r}
+# change the column names
+colnames(join) <- c("Plan.Module","Material","Customer.No","Description","Customer.Dept","Gender","SO","LI","Order.No","Order.Qty","Emp","Plan.SMV","Plan.Date","Plan.Efficiency","Qty","Cum.Qty","Standard.Hours","Cum.Standard.Hours","Work.Hours","Cum.Work.Hours","Plan.Section","Actual.Date","Actual.Section","PE","Work.Center","Actual.Module","Actual.Worked.Hours","Customer","Style.Code","FG.Reference","SO.LI.Worked.Hours","Actual.Efficiency","Total","Actual.SMV","Actual.Standard.Hours")
+```
+
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/join.csv"
+
+# Write the data frame to a CSV file
+write.csv(join, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The joined has been saved as", file_path, "\n")
+```
+```{r}
+identical_cols <- c()
+for (i in 1:(ncol(join)-1)) {
+  for (j in (i+1):ncol(join)) {
+    if (identical(join[,i], join[,j])) {
+      identical_cols <- c(identical_cols, names(join[i]))
+      break
+    }
+  }
+}
+print(identical_cols)
+```
+
+```{r}
+# create an empty list to store the identical columns
+identical_cols <- list()
+
+# loop through all column combinations and find identical columns
+for (i in seq_along(join)) {
+  for (j in seq_along(join)) {
+    # only compare different columns
+    if (i != j) {
+      # check if columns have identical values and order
+      if (identical(join[[i]], join[[j]])) {
+        # add the column names to the list
+        identical_cols[[length(identical_cols) + 1]] <- c(names(join)[i], names(join)[j])
+      }
+    }
+  }
+}
+
+# print the list of identical columns
+identical_cols
+```
+
+```{r}
+library(dplyr)
+# remove the Work.Center column from the join dataframe
+#join <- dplyr::select(join, -Work.Center)
+```
+
+
+```{r}
+# get the data types of each column
+col_types <- sapply(join, class)
+
+# identify categorical columns as those with "factor" or "character" data types
+cat_cols <- names(col_types[col_types %in% c("factor", "character")])
+
+# identify numerical columns as those with "integer" or "numeric" data types
+num_cols <- names(col_types[col_types %in% c("integer", "numeric")])
+
+# print the list of categorical columns and numerical columns
+cat_cols
+num_cols
+```
+```{r}
+library(dplyr)
+
+#join <- join %>%
+ # mutate(LI = as.factor(LI),
+ #        Order.No = as.factor(Order.No))
+```
+
+```{r}
+str(join)
+```
+```{r}
+# Print the unique values of each column in the combined_data data frame
+cat("Unique values of each column:\n")
+for (col_name in colnames(join)) {
+  cat(col_name, ":", length(unique(join[[col_name]])), "unique values\n")
+}
+```
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/join.csv"
+
+# Write the data frame to a CSV file
+write.csv(join, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The joined has been saved as", file_path, "\n")
+```
+```{r}
+# read the CSV file
+join <- read.csv("G:/R_project/CodeBase/RAssignment/join.csv")
+```
+
+```{r}
+str(join)
+```
+
+
+```{r}
+library(caret)
+library(keras)
+library(randomForest)
+
+# Assuming your target variable is Actual.Efficiency
+y <- join$Actual.Efficiency
+
+# Remove target variable from input data
+X <- join[, !(names(join) %in% "Actual.Efficiency")]
+
+# Specify categorical columns
+categorical_cols <- c("Plan.Module", "Material", "Customer.No", "Description", "Customer.Dept", "Gender",
+                      "SO", "Plan.Date", "Actual.Date", "PE", "Actual.Module", "Customer", "Style.Code",
+                      "FG.Reference", "LI", "Order.No", "Plan.Section", "Actual.Section")
+
+# Convert specified columns to character variables
+X[c("LI", "Order.No", "Plan.Section", "Actual.Section")] <- lapply(X[c("LI", "Order.No", "Plan.Section", "Actual.Section")], as.character)
+
+# Convert categorical variables to count-encoded variables
+count_encoded_cols <- list()
+for (col in categorical_cols) {
+  counts <- table(X[[col]])
+  count_encoded <- counts[X[[col]]]
+  count_encoded_cols[[col]] <- count_encoded
+}
+
+# Combine count-encoded variables with numerical columns
+count_encoded_X <- do.call(cbind, count_encoded_cols)
+num_cols <- names(X)[!names(X) %in% categorical_cols]
+num_X <- X[, num_cols]
+X <- cbind(count_encoded_X, num_X)
+
+# Fit random forest model
+set.seed(123)
+rf_model <- randomForest(X, y, importance = TRUE)
+
+# Print variable importance
+print(rf_model$importance)
+```
+```{r}
+# Print variable importance
+print(rf_model$importance)
+```
+
+
+```{r}
+#variables with higher values for %IncMSE and IncNodePurity are considered more important for predicting Actual.Efficiency. Variables with larger values indicate that permuting or splitting based on those variables has a greater impact on the model's predictive performance.
+```
+
+```{r}
+# Sort and print variable importance
+sorted_importance_mse <- sort(rf_model$importance[,"%IncMSE"], decreasing = TRUE)
+sorted_importance_nodepurity <- sort(rf_model$importance[,"IncNodePurity"], decreasing = TRUE)
+print("Variable Importance - %IncMSE:")
+print(sorted_importance_mse)
+print("Variable Importance - IncNodePurity:")
+print(sorted_importance_nodepurity)
+```
+```{r}
+# Get the top 17 columns from sorted_importance_mse and sorted_importance_nodepurity
+top_columns_mse <- names(sorted_importance_mse)[1:17]
+top_columns_nodepurity <- names(sorted_importance_nodepurity)[1:17]
+
+# Get the union of the top columns
+top_columns_union <- union(top_columns_mse, top_columns_nodepurity)
+print(top_columns_union)
+```
+```{r}
+# Select columns from join dataframe based on top_columns_union
+top_features <- join[, c(top_columns_union, "Actual.Efficiency")]
+```
+
+```{r}
+str(top_features)
+```
+```{r}
+# Print the unique values of each column in the combined_data data frame
+cat("Unique values of each column:\n")
+for (col_name in colnames(top_features)) {
+  cat(col_name, ":", length(unique(top_features[[col_name]])), "unique values\n")
+}
+```
+```{r}
+# Set the file path for the CSV file
+file_path <- "G:/R_project/CodeBase/RAssignment/top.csv"
+
+# Write the data frame to a CSV file
+write.csv(top_features, file_path, row.names = FALSE)
+
+# Print a message indicating that the file has been saved
+cat("The top_features has been saved as", file_path, "\n")
+```
+
+```{r}
+# read the CSV file
+top_features <- read.csv("G:/R_project/CodeBase/RAssignment/top.csv")
+```
+
+```{r}
+names(top_features)
+```
+```{r}
+str(top_features)
+```
+```{r}
+# Convert columns to factors
+factor_columns <- c("Actual.Date", "Style.Code", "Actual.Module", "PE", "Description", "SO", "Customer.Dept", "Material", "FG.Reference", "Customer.No", "Actual.Section")
+top_features[factor_columns] <- lapply(top_features[factor_columns], factor)
+
+# Convert columns to numerical
+numeric_columns <- c("SO.LI.Worked.Hours", "Actual.SMV", "Actual.Standard.Hours", "Total", "Actual.Worked.Hours", "Plan.Efficiency", "Order.Qty", "Plan.SMV", "Actual.Efficiency")
+top_features[numeric_columns] <- lapply(top_features[numeric_columns], as.numeric)
+```
+
+```{r}
+str(top_features)
+```
+```{r}
+# Load required libraries
+library(dplyr)
+library(caret)
+library(e1071)
+
+# Encode categorical variables using label encoding
+top_features_encoded <- top_features %>%
+  mutate_at(vars(Actual.Date, Style.Code, Actual.Module, PE, Description, SO, Customer.Dept, Material, FG.Reference, Actual.Section, Customer.No),
+            as.numeric)
+
+# Scale numerical variables
+scaled_features <- scale(top_features_encoded[, -which(names(top_features_encoded) == "Actual.Efficiency")])
+
+# Create the final dataset with scaled variables
+final_dataset <- cbind(scaled_features, Actual.Efficiency = top_features_encoded$Actual.Efficiency)
+
+# Convert matrix to dataframe
+final_dataset <- as.data.frame(final_dataset)
+
+# Split the dataset into training and testing sets
+set.seed(123)
+train_index <- createDataPartition(final_dataset$Actual.Efficiency, p = 0.7, list = FALSE)
+train_data <- final_dataset[train_index, ]
+test_data <- final_dataset[-train_index, ]
+
+# Fit a regression model (e.g., Support Vector Regression)
+model <- svm(Actual.Efficiency ~ ., data = train_data)
+
+# Make predictions on the test set
+predictions <- predict(model, newdata = test_data)
+
+# Evaluate the model
+rmse <- sqrt(mean((predictions - test_data$Actual.Efficiency)^2))
+```
+
+```{r}
+rmse
+#The root mean square error (RMSE) value of 14.34659 indicates the average difference between the predicted values and the actual values of the "Actual.Efficiency" variable in the test dataset. Since the RMSE is a measure of the model's prediction error, a lower RMSE value indicates better performance.
+```
+```{r}
+# Load required libraries
+library(randomForest)
+
+# Encode categorical variables using label encoding
+top_features_encoded <- top_features %>%
+  mutate_at(vars(Actual.Date, Style.Code, Actual.Module, PE, Description, SO, Customer.Dept, Material, FG.Reference, Actual.Section, Customer.No),
+            as.numeric)
+
+# Scale numerical variables
+scaled_features <- scale(top_features_encoded[, -which(names(top_features_encoded) == "Actual.Efficiency")])
+
+# Create the final dataset with scaled variables
+final_dataset <- cbind(scaled_features, Actual.Efficiency = top_features_encoded$Actual.Efficiency)
+
+# Convert matrix to dataframe
+final_dataset <- as.data.frame(final_dataset)
+
+# Split the dataset into training and testing sets
+set.seed(123)
+train_index <- createDataPartition(final_dataset$Actual.Efficiency, p = 0.7, list = FALSE)
+train_data <- final_dataset[train_index, ]
+test_data <- final_dataset[-train_index, ]
+
+# Fit a regression model (e.g., Random Forest Regression)
+model <- randomForest(Actual.Efficiency ~ ., data = train_data)
+
+# Make predictions on the test set
+predictions <- predict(model, newdata = test_data)
+
+# Evaluate the model
+rmse <- sqrt(mean((predictions - test_data$Actual.Efficiency)^2))
+```
+
+```{r}
+rmse
+```
+```{r}
+# Load required libraries
+library(dplyr)
+library(caret)
+library(e1071)
+library(randomForest)
+
+# Encode categorical variables using label encoding
+top_features_encoded <- top_features %>%
+  mutate_at(vars(Actual.Date, Style.Code, Actual.Module, PE, Description, SO, Customer.Dept, Material, FG.Reference, Actual.Section, Customer.No),
+            as.numeric)
+
+# Scale numerical variables
+scaled_features <- scale(top_features_encoded[, -which(names(top_features_encoded) == "Actual.Efficiency")])
+
+# Create the final dataset with scaled variables
+final_dataset <- cbind(scaled_features, Actual.Efficiency = top_features_encoded$Actual.Efficiency)
+
+# Convert matrix to dataframe
+final_dataset <- as.data.frame(final_dataset)
+
+# Split the dataset into training and testing sets
+set.seed(123)
+train_index <- createDataPartition(final_dataset$Actual.Efficiency, p = 0.7, list = FALSE)
+train_data <- final_dataset[train_index, ]
+test_data <- final_dataset[-train_index, ]
+
+# Define the individual models
+svmModel <- train(Actual.Efficiency ~ ., data = train_data, method = "svmRadial")
+rfModel <- train(Actual.Efficiency ~ ., data = train_data, method = "rf")
+```
+
+```{r}
+library(caretEnsemble)
+```
+
+```{r}
+# Make predictions on the test set using each model
+svm_predictions <- predict(svmModel, newdata = test_data)
+rf_predictions <- predict(rfModel, newdata = test_data)
+
+# Combine the predictions by averaging
+ensemble_predictions <- (svm_predictions + rf_predictions) / 2
+
+# Evaluate the ensemble model
+rmse <- sqrt(mean((ensemble_predictions - test_data$Actual.Efficiency)^2))
+```
+
+
+```{r}
+rmse
+```
+```{r}
+#SVM: The SVM regression model has an RMSE of 14.34659. This means, on average, the predictions made by the SVM model deviate from the actual values by approximately 14.35 units. The higher the RMSE, the larger the average prediction error.
+
+#Random Forest: The Random Forest regression model has a significantly lower RMSE value of 3.290157 compared to the SVM model. This indicates that the Random Forest model's predictions have, on average, a smaller deviation from the actual values, with an average error of approximately 3.29 units. The lower RMSE suggests that the Random Forest model may be performing better than the SVM model in terms of accuracy.
+
+#Ensemble Model: The ensemble model, which combines both SVM and Random Forest, has an RMSE value of 8.20233. This is higher than the Random Forest model's RMSE but lower than the SVM model's RMSE. The ensemble model aims to leverage the strengths of both individual models, potentially providing improved performance compared to using each model separately. In this case, the ensemble model's RMSE indicates that its predictions have an average deviation of approximately 8.20 units from the actual values.
+
+#In an ensemble model, different models are combined, and their predictions are weighted to obtain the final prediction. If the weighting is not optimal or if the individual models have conflicting predictions, it can lead to a higher RMSE in the ensemble model compared to the best-performing individual model
+
+#Ensemble models work best when the individual models have diverse strengths and weaknesses. If the SVM and Random Forest models have similar strengths or weaknesses, combining them may not lead to significant improvements and could potentially result in a higher RMSE
+```
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

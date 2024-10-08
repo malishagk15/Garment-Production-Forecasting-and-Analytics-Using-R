@@ -1,0 +1,7 @@
+"0","# Convert columns to factors"
+"0","factor_columns <- c(""Actual.Date"", ""Style.Code"", ""Actual.Module"", ""PE"", ""Description"", ""SO"", ""Customer.Dept"", ""Material"", ""FG.Reference"", ""Customer.No"", ""Actual.Section"")"
+"0","top_features[factor_columns] <- lapply(top_features[factor_columns], factor)"
+"0",""
+"0","# Convert columns to numerical"
+"0","numeric_columns <- c(""SO.LI.Worked.Hours"", ""Actual.SMV"", ""Actual.Standard.Hours"", ""Total"", ""Actual.Worked.Hours"", ""Plan.Efficiency"", ""Order.Qty"", ""Plan.SMV"", ""Actual.Efficiency"")"
+"0","top_features[numeric_columns] <- lapply(top_features[numeric_columns], as.numeric)"

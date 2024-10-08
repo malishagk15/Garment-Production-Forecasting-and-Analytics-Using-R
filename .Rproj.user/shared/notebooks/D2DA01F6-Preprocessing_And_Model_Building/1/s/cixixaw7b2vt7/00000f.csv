@@ -1,0 +1,8 @@
+"0","library(dplyr)"
+"0",""
+"0","# create a lookup table to map old values to new values"
+"0","section_map <- c(""SECTION 1"" = ""1"", ""SECTION 2"" = ""2"", ""SECTION 3"" = ""3"", ""SECTION 4"" = ""4"")"
+"0",""
+"0","# update the values in the Section column"
+"0","combined_data_ac_filtered <- combined_data_ac_filtered %>%"
+"0","  mutate(Section = section_map[Section])"

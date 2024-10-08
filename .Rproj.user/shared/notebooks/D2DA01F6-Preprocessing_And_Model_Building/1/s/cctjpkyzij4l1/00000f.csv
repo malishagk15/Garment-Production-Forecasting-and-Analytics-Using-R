@@ -1,0 +1,2 @@
+"0","# remove the Work.Center column from the join dataframe"
+"0","joined_data <- dplyr::select(joined_data, -Work.Center)"

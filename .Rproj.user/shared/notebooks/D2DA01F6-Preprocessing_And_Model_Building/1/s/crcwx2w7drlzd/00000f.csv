@@ -1,0 +1,2 @@
+"0","# remove rows with NULLs in SO and LI columns"
+"0","combined_data_ac_filtered <- combined_data_ac_filtered[complete.cases(combined_data_ac_filtered[, c(""SO"", ""LI"")]), ]"

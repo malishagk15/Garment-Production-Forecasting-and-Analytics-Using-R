@@ -1,0 +1,39 @@
+PR 03.28.2018 - D051
+PR 03.29.2018 - D051
+PR 04.02.2018 - D051
+PR 04.05.2018 - D051
+PR 04.06.2018 - D051
+
+PR 04.10.2018 - D051
+
+PR 04.24.2018 - D051 to PR 05.09.2018 - D051
+PR 05.16.2018 - D051
+PR 05.17.2018 - D051
+PR 05.21.2018 - D051
+PR 06.12.2018 - D051
+
+Date
+Section
+Module
+Worked Hour
+Daily Performance
+CUstomer
+Style Code
+Style Description
+SO
+LI
+FG Reference
+SO/LI Worked Hours
+Efficiency
+SMV
+Standard Hour
+
+
+"Date","Section","PE","Work Center","Module","Worked Hours","Daily Down","Time Hours","Impacted DownTime Hours","Daily Performance","Customer","Style Code","Style Description","SO","LI","FG Reference","SO/LI Worked Hours","Efficiency","Time Slot","Total","SMV","Standard Hours"
+
+"Planned/Projected Efficiency","Present Employees","Absent Employees","No Of Hours Per Day", "Daily Down Time Hours","Impacted DownTime Hours", "Daily Performance","Style Description"
+
+
+
+
+

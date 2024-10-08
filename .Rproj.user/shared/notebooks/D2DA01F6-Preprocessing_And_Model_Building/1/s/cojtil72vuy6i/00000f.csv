@@ -1,0 +1,6 @@
+"0","# read the CSV file"
+"0","combined_data_ac_filtered <- read.csv(""G:/R_project/CodeBase/RAssignment/combined_data_ac_filtered.csv"")"
+"0",""
+"0","# change the column names"
+"0","colnames(combined_data_ac_filtered) <- c(""Date"", ""Section"", ""PE"", ""Work Center"", ""Actual Module"", ""Actual Worked Hours"", ""Customer"", ""Style Code"", ""SO"", ""LI"", ""FG Reference"", ""SO/LI Worked Hours"", ""Actual Efficiency"", ""Total"", ""Actual SMV"", ""Actual Standard Hours"")"
+"0",""
